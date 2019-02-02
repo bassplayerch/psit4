@@ -1,15 +1,22 @@
-import {combineReducers, configureStore, createSlice} from 'redux-starter-kit';
-import auth from './auth/index';
+import { combineReducers, configureStore, createSlice } from 'redux-starter-kit';
+import { connectRouter, routerMiddleware } from 'connected-react-router';
+import auth from './auth/reducer';
+import { createBrowserHistory, History } from 'history';
+import thunk from 'redux-thunk';
 
+const createRootReducer = (history: History) =>
+	combineReducers({
+		auth: auth.reducer,
+		router: connectRouter(history)
+	});
 
+export type AppState = ReturnType<ReturnType<typeof createRootReducer>>;
 
-
-const rootReducer = combineReducers({
-    auth: auth.reducer
-});
+export const history = createBrowserHistory();
 
 const store = configureStore({
-    reducer: rootReducer
+	reducer: createRootReducer(history),
+	middleware: [ thunk, routerMiddleware(history) ]
 });
 
 export default store;
